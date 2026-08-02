@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-branches:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: [
+          'chunked-compression',
+          'cs-bindings',
+          'patch-back4blood',
+          'patch-dead-by-daylight',
+          'patch-dragon-quest-xi',
+          'patch-marvel-rivals',
+          'patch-outlast-trials',
+          'patch-torchlight',
+          'patch-visions-of-mana',
+          'patch-wuthering-waves'
+        ]
+
+    steps:
+      - name: Checkout Target Branch
+        uses: actions/checkout@v4
+        with:
+          repository: 'trumank/repak'
+          ref: ${{ matrix.branch }}
+          path: 'repak-source'
+
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Cache Rust Dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: 'repak-source'
+
+      - name: Build Executable
+        run: |
+          cd repak-source
+          cargo build --release
+
+      - name: Rename Executable
+        run: |
+          mkdir build-output
+          copy repak-source\target\release\repak.exe build-output\repak-${{ matrix.branch }}.exe
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: repak-${{ matrix.branch }}-exe
+          path: build-output/repak-${{ matrix.branch }}.exe
+
+  publish-release:
+    needs: build-branches
+    runs-on: windows-latest
+    steps:
+      - name: Download All Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-executables
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-branch-builds
+          name: "Latest Multi-Branch Repak Builds"
+          body: "Automated builds for non-master branches from trumank/repak."
+          files: all-executables/**/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

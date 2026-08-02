@@ -1,5 +1,5 @@
 # PakMaster-Dependencies
-Backend repo for PakMaster.
+Backend repo for [PakMaster](https://github.com/AriesLR/PakMaster).
 
 All releases belong to [Trumank](https://github.com/trumank).
 

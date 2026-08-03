@@ -74,7 +74,7 @@ jobs:
           tag_name: latest-branch-builds
           name: "Latest Multi-Branch Repak Builds"
           body: |
-            Automated Windows x86_64 builds compiled from non-master branches of [trumank/repak](https://github.com/trumank/repak).
+            Automated Windows x86_64 builds compiled from non-master branches of [repak](https://github.com/trumank/repak).
             
             **Credit:** All original source code and rights belong to [trumank](https://github.com/trumank).
             **Licenses:** Dual-licensed under [MIT](https://github.com/trumank/repak/blob/master/LICENSE-MIT) and [Apache 2.0](https://github.com/trumank/repak/blob/master/LICENSE-APACHE).
